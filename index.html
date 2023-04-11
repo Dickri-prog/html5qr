@@ -3,33 +3,53 @@
 <head>
 <meta charset="utf-8">
 <title>Hello OpenCV.js</title>
+<style>
+	.save {
+		display: none;
+		width: 200px;
+		height: 200px;
+	}
+
+	.show {
+		display: block !important;
+	}
+</style>
 </head>
 <body>
 <h2>html5qr</h2>
 <div id="qr-reader" style="width: 600px"></div>
+<div class="save">
+	<button type="button" id="save-btn" name="button" style="width: 100px; height:100px;">save</button>
+</div>
 <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js" type="text/javascript"></script>
 
 <script>
 const set = new Set()
+const data = new Set()
 	function onScanSuccess(decodedText, decodedResult) {
-	console.log(decodedText)
-	const form = new FormData();
-		form.append('order_id', decodedText)
-	
-	<!-- fetch("getIdOrder.php", { -->
-		<!-- method: "POST", -->
-		<!-- header: { -->
-			<!-- 'Content-Type':  'multipart/form-data', -->
-		<!-- }, -->
-		<!-- body: form, -->
-		
-	<!-- }).then((response) => response.text()).then(result => console.log(result)) -->
-	set.add(decodedText)
-	console.log(set)
+
+		data.add(decodedText);
+
+		if (data.size > 0) {
+			document.querySelector(".save").classList.add("show")
+		}else {
+			document.querySelector(".save").classList.remove("show")
+		}
+		console.log(data)
+
+
 	}
 	var html5QrcodeScanner = new Html5QrcodeScanner(
 		"qr-reader", { fps: 10, qrbox: 250 });
 	html5QrcodeScanner.render(onScanSuccess);
+
+	document.querySelector("#save-btn").addEventListener('click', function() {
+	data.forEach((item) => {
+		const url = `writetotxt.php?id=${item}`;
+	fetch(url).then(response => response.text()).then(result => console.log(result))
+	});
+
+	})
 </script>
 
 </body>
